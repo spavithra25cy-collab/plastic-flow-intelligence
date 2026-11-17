@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beyond the Factory Floor | Plastic Line Flow Intelligence</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Beyond the Factory Floor</h1>
+      <p class="sub">Plastic injection-molding Line 3 &middot; finding hidden inefficiencies and predicting disruptions across the whole line</p>
+    </div>
+    <div class="controls">
+      <label>Scenario <select id="preset"></select></label>
+      <label>Speed
+        <select id="speed">
+          <option value="1">1x</option>
+          <option value="10">10x</option>
+          <option value="30" selected>30x</option>
+          <option value="60">60x</option>
+          <option value="120">120x</option>
+        </select>
+      </label>
+      <button id="play" type="button">Pause</button>
+      <button id="reset" type="button">Reset</button>
+      <span id="clock" class="clock">Sim time 00:00:00</span>
+    </div>
+  </header>
+
+  <main>
+    <section id="kpis" class="kpis" aria-label="Key indicators"></section>
+
+    <section class="card" id="f1">
+      <div class="card-head">
+        <h2><span class="num">1</span> Live line flow map</h2>
+        <div class="seg" role="group" aria-label="View">
+          <button type="button" id="vSystem" class="on">System view</button>
+          <button type="button" id="vLocal">Machine view</button>
+        </div>
+      </div>
+      <p class="hint">Each machine is judged on its own in <b>Machine view</b>, the way existing monitors work. <b>System view</b> shows what each machine is actually doing to the line: starved, blocked or running, with buffer levels between them.</p>
+      <svg id="flow" viewBox="0 0 1000 250" role="img" aria-label="Production line flow map"></svg>
+      <div id="gap" class="gap"></div>
+      <div class="legend">
+        <span><i style="background:#2fbf71"></i>Running</span>
+        <span><i style="background:#f5b73b"></i>Starved (waiting for input)</span>
+        <span><i style="background:#ef7d3a"></i>Blocked (output full)</span>
+        <span><i style="background:#e5484d"></i>Down</span>
+      </div>
+    </section>
+
+    <section class="grid2">
+      <div class="card" id="f2">
+        <div class="card-head"><h2><span class="num">2</span> Hidden-loss attribution</h2></div>
+        <p class="hint">Every second a machine waits is traced back to the station that caused it, through the buffers. Cells show minutes of waiting <b>caused by</b> the row station <b>on</b> the column station.</p>
+        <div id="matrix"></div>
+        <h3>Where the constraint (Injection Molding) lost its time</h3>
+        <div id="loss"></div>
+        <h3>Insights</h3>
+        <ul id="insights" class="insights"></ul>
+        <h3>Stop ledger (what local OEE hides)</h3>
+        <div id="ledger"></div>
+      </div>
+
+      <div class="card" id="f3">
+        <div class="card-head"><h2><span class="num">3</span> Early-warning predictor</h2></div>
+        <p class="hint">Buffer trends and cycle-time drift are extrapolated to warn before a stall or a new bottleneck shows up in output.</p>
+        <div class="risk"><span>Disruption risk</span><div class="bar"><div id="riskFill"></div></div><b id="riskNum">0</b></div>
+        <ul id="alerts" class="alerts"></ul>
+        <h3>Buffer levels, last 10 min</h3>
+        <canvas id="cBuf" class="chart"></canvas>
+        <h3>Line output (5-min rolling) vs ideal</h3>
+        <canvas id="cOut" class="chart"></canvas>
+      </div>
+    </section>
+
+    <section class="grid2">
+      <div class="card" id="f4">
+        <div class="card-head"><h2><span class="num">4</span> Ripple what-if simulator</h2></div>
+        <p class="hint">Disrupt one station and see how the effect spreads through the line. Runs the line twice, with and without the disruption, using identical randomness.</p>
+        <div class="form">
+          <label>Station <select id="wiStation"></select></label>
+          <label>Disruption
+            <select id="wiType">
+              <option value="stop">Full stop</option>
+              <option value="slow">Slowdown (+40% cycle time)</option>
+            </select>
+          </label>
+          <label>Duration <input type="range" id="wiMag" min="1" max="10" value="3"><b id="wiMagVal">3 min</b></label>
+        </div>
+        <div class="row">
+          <button type="button" id="wiRun" class="primary">Run what-if (1 h)</button>
+          <button type="button" id="wiLive">Inject into live line</button>
+        </div>
+        <div id="wiOut" class="out"></div>
+      </div>
+
+      <div class="card" id="f5">
+        <div class="card-head"><h2><span class="num">5</span> Improvement ranking</h2></div>
+        <p class="hint">Each lever is tested by simulation on the current line (including drift) and ranked by recovered output. The biggest lever is often not the slowest machine.</p>
+        <div class="row"><button type="button" id="senRun" class="primary">Recompute from current state</button><span id="senNote" class="muted"></span></div>
+        <div id="senOut" class="out"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Prototype with simulated data. One unit = one tray of 20 parts. See the README for the model, assumptions and the 6-hour build plan.
+  </footer>
+
+  <script src="sim.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

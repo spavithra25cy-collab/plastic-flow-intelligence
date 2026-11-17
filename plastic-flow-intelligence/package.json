@@ -1,0 +1,10 @@
+{
+  "name": "plastic-flow-intelligence",
+  "version": "1.0.0",
+  "description": "Beyond the Factory Floor: system-level inefficiency detection and disruption early-warning prototype for a plastic injection-molding line.",
+  "scripts": {
+    "test": "node tests/sim.test.js",
+    "start": "npx --yes serve ."
+  },
+  "license": "MIT"
+}
